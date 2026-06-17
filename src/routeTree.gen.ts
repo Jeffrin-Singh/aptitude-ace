@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedPracticeRouteImport } from './routes/_authenticated/practice'
 import { Route as ApiPublicBootstrapAdminRouteImport } from './routes/api/public/bootstrap-admin'
+import { Route as AuthenticatedQuizTopicDifficultyRouteImport } from './routes/_authenticated/quiz.$topic.$difficulty'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -39,18 +40,26 @@ const ApiPublicBootstrapAdminRoute = ApiPublicBootstrapAdminRouteImport.update({
   path: '/api/public/bootstrap-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedQuizTopicDifficultyRoute =
+  AuthenticatedQuizTopicDifficultyRouteImport.update({
+    id: '/quiz/$topic/$difficulty',
+    path: '/quiz/$topic/$difficulty',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/practice': typeof AuthenticatedPracticeRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
+  '/quiz/$topic/$difficulty': typeof AuthenticatedQuizTopicDifficultyRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/practice': typeof AuthenticatedPracticeRoute
   '/': typeof AuthenticatedIndexRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
+  '/quiz/$topic/$difficulty': typeof AuthenticatedQuizTopicDifficultyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +68,23 @@ export interface FileRoutesById {
   '/_authenticated/practice': typeof AuthenticatedPracticeRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
+  '/_authenticated/quiz/$topic/$difficulty': typeof AuthenticatedQuizTopicDifficultyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/practice' | '/api/public/bootstrap-admin'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/practice'
+    | '/api/public/bootstrap-admin'
+    | '/quiz/$topic/$difficulty'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/practice' | '/' | '/api/public/bootstrap-admin'
+  to:
+    | '/auth'
+    | '/practice'
+    | '/'
+    | '/api/public/bootstrap-admin'
+    | '/quiz/$topic/$difficulty'
   id:
     | '__root__'
     | '/_authenticated'
@@ -72,6 +92,7 @@ export interface FileRouteTypes {
     | '/_authenticated/practice'
     | '/_authenticated/'
     | '/api/public/bootstrap-admin'
+    | '/_authenticated/quiz/$topic/$difficulty'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,17 +138,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicBootstrapAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/quiz/$topic/$difficulty': {
+      id: '/_authenticated/quiz/$topic/$difficulty'
+      path: '/quiz/$topic/$difficulty'
+      fullPath: '/quiz/$topic/$difficulty'
+      preLoaderRoute: typeof AuthenticatedQuizTopicDifficultyRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedPracticeRoute: typeof AuthenticatedPracticeRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedQuizTopicDifficultyRoute: typeof AuthenticatedQuizTopicDifficultyRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPracticeRoute: AuthenticatedPracticeRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedQuizTopicDifficultyRoute: AuthenticatedQuizTopicDifficultyRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
