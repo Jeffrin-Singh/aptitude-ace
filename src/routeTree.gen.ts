@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedPracticeRouteImport } from './routes/_authenticated/practice'
+import { Route as AuthenticatedPerformanceRouteImport } from './routes/_authenticated/performance'
 import { Route as ApiPublicBootstrapAdminRouteImport } from './routes/api/public/bootstrap-admin'
 import { Route as AuthenticatedQuizTopicDifficultyRouteImport } from './routes/_authenticated/quiz.$topic.$difficulty'
 import { Route as AuthenticatedQuizTopicDifficultyResultSessionIdRouteImport } from './routes/_authenticated/quiz.$topic.$difficulty.result.$sessionId'
@@ -36,6 +37,12 @@ const AuthenticatedPracticeRoute = AuthenticatedPracticeRouteImport.update({
   path: '/practice',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPerformanceRoute =
+  AuthenticatedPerformanceRouteImport.update({
+    id: '/performance',
+    path: '/performance',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiPublicBootstrapAdminRoute = ApiPublicBootstrapAdminRouteImport.update({
   id: '/api/public/bootstrap-admin',
   path: '/api/public/bootstrap-admin',
@@ -57,6 +64,7 @@ const AuthenticatedQuizTopicDifficultyResultSessionIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/performance': typeof AuthenticatedPerformanceRoute
   '/practice': typeof AuthenticatedPracticeRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/quiz/$topic/$difficulty': typeof AuthenticatedQuizTopicDifficultyRouteWithChildren
@@ -64,6 +72,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/performance': typeof AuthenticatedPerformanceRoute
   '/practice': typeof AuthenticatedPracticeRoute
   '/': typeof AuthenticatedIndexRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
@@ -74,6 +83,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/performance': typeof AuthenticatedPerformanceRoute
   '/_authenticated/practice': typeof AuthenticatedPracticeRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/performance'
     | '/practice'
     | '/api/public/bootstrap-admin'
     | '/quiz/$topic/$difficulty'
@@ -92,6 +103,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/performance'
     | '/practice'
     | '/'
     | '/api/public/bootstrap-admin'
@@ -101,6 +113,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/performance'
     | '/_authenticated/practice'
     | '/_authenticated/'
     | '/api/public/bootstrap-admin'
@@ -144,6 +157,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPracticeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/performance': {
+      id: '/_authenticated/performance'
+      path: '/performance'
+      fullPath: '/performance'
+      preLoaderRoute: typeof AuthenticatedPerformanceRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/public/bootstrap-admin': {
       id: '/api/public/bootstrap-admin'
       path: '/api/public/bootstrap-admin'
@@ -184,12 +204,14 @@ const AuthenticatedQuizTopicDifficultyRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedPerformanceRoute: typeof AuthenticatedPerformanceRoute
   AuthenticatedPracticeRoute: typeof AuthenticatedPracticeRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedQuizTopicDifficultyRoute: typeof AuthenticatedQuizTopicDifficultyRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedPerformanceRoute: AuthenticatedPerformanceRoute,
   AuthenticatedPracticeRoute: AuthenticatedPracticeRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedQuizTopicDifficultyRoute:
