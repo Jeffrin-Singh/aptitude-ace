@@ -26,18 +26,19 @@ export function AppShell({ children }: { children: ReactNode }) {
     );
   }
 
-  const userLinks = [
+  type NavLink = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
+  const userLinks: NavLink[] = [
     { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
     { to: "/practice", label: "Practice", icon: BookOpen },
     { to: "/performance", label: "My Performance", icon: BarChart3 },
-  ] as const;
+  ];
 
-  const adminLinks = [
+  const adminLinks: NavLink[] = [
     { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
     { to: "/users", label: "Users", icon: Users },
-  ] as const;
+  ];
 
-  const links = role === "admin" ? adminLinks : userLinks;
+  const links: NavLink[] = role === "admin" ? adminLinks : userLinks;
 
   return (
     <div className="min-h-screen flex w-full bg-background">
