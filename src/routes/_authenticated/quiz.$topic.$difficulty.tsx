@@ -286,7 +286,7 @@ function QuizPage() {
             <div className="mt-5 p-4 rounded-lg bg-muted border-l-4 border-accent">
               <div className="font-semibold text-sm mb-2">Explanation</div>
               <div className="text-sm whitespace-pre-wrap text-muted-foreground">
-                {q.explanation}
+                {answer.explanation}
               </div>
             </div>
           )}
