@@ -155,7 +155,8 @@ function QuizPage() {
       .insert({
         user_id: user.id,
         topic,
-        difficulty: diff,
+        difficulty: dbDifficulty,
+        session_type: sessionType,
         score,
         total_questions: questions.length,
         time_taken_seconds: timeTaken,
