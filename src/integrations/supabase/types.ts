@@ -86,13 +86,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "question_attempts_question_id_fkey"
-            columns: ["question_id"]
-            isOneToOne: false
-            referencedRelation: "questions_public"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "question_attempts_session_id_fkey"
             columns: ["session_id"]
             isOneToOne: false
@@ -196,44 +189,25 @@ export type Database = {
       }
     }
     Views: {
-      questions_public: {
-        Row: {
-          created_at: string | null
-          difficulty: Database["public"]["Enums"]["difficulty_level"] | null
-          id: string | null
-          option_a: string | null
-          option_b: string | null
-          option_c: string | null
-          option_d: string | null
-          question_text: string | null
-          topic: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          difficulty?: Database["public"]["Enums"]["difficulty_level"] | null
-          id?: string | null
-          option_a?: string | null
-          option_b?: string | null
-          option_c?: string | null
-          option_d?: string | null
-          question_text?: string | null
-          topic?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          difficulty?: Database["public"]["Enums"]["difficulty_level"] | null
-          id?: string | null
-          option_a?: string | null
-          option_b?: string | null
-          option_c?: string | null
-          option_d?: string | null
-          question_text?: string | null
-          topic?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
+      get_questions: {
+        Args: {
+          p_difficulty: Database["public"]["Enums"]["difficulty_level"]
+          p_topic: string
+        }
+        Returns: {
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          id: string
+          option_a: string
+          option_b: string
+          option_c: string
+          option_d: string
+          question_text: string
+          topic: string
+        }[]
+      }
       grade_answer: {
         Args: { p_question_id: string; p_selected_option: string }
         Returns: {
