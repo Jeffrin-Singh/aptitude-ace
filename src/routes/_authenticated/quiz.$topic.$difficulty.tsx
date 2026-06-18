@@ -54,15 +54,11 @@ function QuizPage() {
   const questionStartedAt = useRef(Date.now());
   const totalSeconds = TIMER_MINUTES[diff] * 60;
 
-  // Load questions
+  // Load questions via safe RPC (no answers exposed)
   useEffect(() => {
     if (!topic) return;
-    supabase
-      .from("questions")
-      .select("*")
-      .eq("topic", topic)
-      .eq("difficulty", diff)
-      .then(({ data, error }) => {
+    (supabase.rpc as any)("get_questions", { p_topic: topic, p_difficulty: diff }).then(
+      ({ data, error }: { data: Question[] | null; error: { message: string } | null }) => {
         if (error) {
           toast.error(error.message);
           return;
@@ -70,8 +66,10 @@ function QuizPage() {
         const shuffled = [...(data ?? [])].sort(() => Math.random() - 0.5);
         setQuestions(shuffled as Question[]);
         setLoading(false);
-      });
+      },
+    );
   }, [topic, diff]);
+
 
   // Reset per-question timer
   useEffect(() => {
