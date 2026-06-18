@@ -101,17 +101,37 @@ function QuizPage() {
     [answers],
   );
 
-  const onAnswer = (opt: "a" | "b" | "c" | "d") => {
+  const onAnswer = async (opt: "a" | "b" | "c" | "d") => {
     if (!q || answer) return;
     const timeSpent = Math.round((Date.now() - questionStartedAt.current) / 1000);
-    const isCorrect = opt === q.correct_option;
+    const { data, error } = await (supabase.rpc as any)("grade_answer", {
+      p_question_id: q.id,
+      p_selected_option: opt,
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row) {
+      toast.error("Unable to grade answer");
+      return;
+    }
+    const isCorrect = !!row.is_correct;
     setAnswers((prev) => ({
       ...prev,
-      [q.id]: { selected: opt, isCorrect, timeSpent },
+      [q.id]: {
+        selected: opt,
+        isCorrect,
+        correctOption: row.correct_option as "a" | "b" | "c" | "d",
+        explanation: row.explanation as string,
+        timeSpent,
+      },
     }));
     if (isCorrect) toast.success("Correct!");
     else toast.error("Incorrect");
   };
+
 
   const handleSubmit = async (auto = false) => {
     if (submitting || submitted) return;
