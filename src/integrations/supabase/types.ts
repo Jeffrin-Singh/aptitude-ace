@@ -192,6 +192,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_questions: {
+        Args: {
+          p_difficulty: Database["public"]["Enums"]["difficulty_level"]
+          p_topic: string
+        }
+        Returns: {
+          difficulty: Database["public"]["Enums"]["difficulty_level"]
+          id: string
+          option_a: string
+          option_b: string
+          option_c: string
+          option_d: string
+          question_text: string
+          topic: string
+        }[]
+      }
+      grade_answer: {
+        Args: { p_question_id: string; p_selected_option: string }
+        Returns: {
+          correct_option: string
+          explanation: string
+          is_correct: boolean
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -25,15 +25,16 @@ type Question = {
   option_b: string;
   option_c: string;
   option_d: string;
-  correct_option: "a" | "b" | "c" | "d";
-  explanation: string;
 };
 
 type AnswerState = {
   selected: "a" | "b" | "c" | "d" | null;
   isCorrect: boolean;
+  correctOption: "a" | "b" | "c" | "d";
+  explanation: string;
   timeSpent: number;
 };
+
 
 function QuizPage() {
   const { topic: topicSlug, difficulty } = Route.useParams();
@@ -53,15 +54,11 @@ function QuizPage() {
   const questionStartedAt = useRef(Date.now());
   const totalSeconds = TIMER_MINUTES[diff] * 60;
 
-  // Load questions
+  // Load questions via safe RPC (no answers exposed)
   useEffect(() => {
     if (!topic) return;
-    supabase
-      .from("questions")
-      .select("*")
-      .eq("topic", topic)
-      .eq("difficulty", diff)
-      .then(({ data, error }) => {
+    (supabase.rpc as any)("get_questions", { p_topic: topic, p_difficulty: diff }).then(
+      ({ data, error }: { data: Question[] | null; error: { message: string } | null }) => {
         if (error) {
           toast.error(error.message);
           return;
@@ -69,8 +66,10 @@ function QuizPage() {
         const shuffled = [...(data ?? [])].sort(() => Math.random() - 0.5);
         setQuestions(shuffled as Question[]);
         setLoading(false);
-      });
+      },
+    );
   }, [topic, diff]);
+
 
   // Reset per-question timer
   useEffect(() => {
@@ -102,17 +101,37 @@ function QuizPage() {
     [answers],
   );
 
-  const onAnswer = (opt: "a" | "b" | "c" | "d") => {
+  const onAnswer = async (opt: "a" | "b" | "c" | "d") => {
     if (!q || answer) return;
     const timeSpent = Math.round((Date.now() - questionStartedAt.current) / 1000);
-    const isCorrect = opt === q.correct_option;
+    const { data, error } = await (supabase.rpc as any)("grade_answer", {
+      p_question_id: q.id,
+      p_selected_option: opt,
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row) {
+      toast.error("Unable to grade answer");
+      return;
+    }
+    const isCorrect = !!row.is_correct;
     setAnswers((prev) => ({
       ...prev,
-      [q.id]: { selected: opt, isCorrect, timeSpent },
+      [q.id]: {
+        selected: opt,
+        isCorrect,
+        correctOption: row.correct_option as "a" | "b" | "c" | "d",
+        explanation: row.explanation as string,
+        timeSpent,
+      },
     }));
     if (isCorrect) toast.success("Correct!");
     else toast.error("Incorrect");
   };
+
 
   const handleSubmit = async (auto = false) => {
     if (submitting || submitted) return;
@@ -229,7 +248,7 @@ function QuizPage() {
             {(["a", "b", "c", "d"] as const).map((opt) => {
               const text = q[`option_${opt}` as keyof Question] as string;
               const isSelected = answer?.selected === opt;
-              const isCorrectOpt = q.correct_option === opt;
+              const isCorrectOpt = answer?.correctOption === opt;
               const showResult = !!answer;
               return (
                 <button
@@ -267,7 +286,7 @@ function QuizPage() {
             <div className="mt-5 p-4 rounded-lg bg-muted border-l-4 border-accent">
               <div className="font-semibold text-sm mb-2">Explanation</div>
               <div className="text-sm whitespace-pre-wrap text-muted-foreground">
-                {q.explanation}
+                {answer.explanation}
               </div>
             </div>
           )}
