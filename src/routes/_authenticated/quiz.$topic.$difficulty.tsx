@@ -25,15 +25,16 @@ type Question = {
   option_b: string;
   option_c: string;
   option_d: string;
-  correct_option: "a" | "b" | "c" | "d";
-  explanation: string;
 };
 
 type AnswerState = {
   selected: "a" | "b" | "c" | "d" | null;
   isCorrect: boolean;
+  correctOption: "a" | "b" | "c" | "d";
+  explanation: string;
   timeSpent: number;
 };
+
 
 function QuizPage() {
   const { topic: topicSlug, difficulty } = Route.useParams();
