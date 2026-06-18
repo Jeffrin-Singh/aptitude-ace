@@ -51,21 +51,9 @@ function Dashboard() {
   }, [user]);
 
   if (role === "admin") {
-    return (
-      <div className="p-8 max-w-6xl">
-        <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-        <p className="text-muted-foreground mb-8">
-          Full admin panel (user management, platform analytics) is coming in the next iteration.
-        </p>
-        <Card>
-          <CardContent className="p-6 text-sm text-muted-foreground">
-            You're signed in as an admin. The user-facing quiz experience is available for users
-            you create.
-          </CardContent>
-        </Card>
-      </div>
-    );
+    return <AdminOverview />;
   }
+
 
   const total = sessions.length;
   const avgPct =
