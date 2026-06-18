@@ -233,3 +233,132 @@ function EmptyState() {
     </div>
   );
 }
+
+type AdminUserRow = {
+  user_id: string;
+  email: string;
+  full_name: string;
+  role: "admin" | "user";
+  total_quizzes: number;
+  avg_score_pct: number;
+  last_active: string | null;
+};
+
+function AdminOverview() {
+  const [rows, setRows] = useState<AdminUserRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (supabase.rpc as any)("admin_list_users").then(({ data }: { data: AdminUserRow[] | null }) => {
+      setRows((data ?? []).filter((r) => r.role !== "admin"));
+      setLoading(false);
+    });
+  }, []);
+
+  const totalUsers = rows.length;
+  const totalQuizzes = rows.reduce((s, r) => s + Number(r.total_quizzes), 0);
+  const overallAvg =
+    rows.filter((r) => Number(r.total_quizzes) > 0).length === 0
+      ? 0
+      : Math.round(
+          rows
+            .filter((r) => Number(r.total_quizzes) > 0)
+            .reduce((s, r) => s + Number(r.avg_score_pct), 0) /
+            rows.filter((r) => Number(r.total_quizzes) > 0).length,
+        );
+
+  const cards = [
+    { label: "Total Users", value: totalUsers, icon: BookOpen },
+    { label: "Total Quizzes", value: totalQuizzes, icon: Target },
+    { label: "Platform Avg", value: `${overallAvg}%`, icon: Trophy },
+    {
+      label: "Active Today",
+      value: rows.filter(
+        (r) => r.last_active && new Date(r.last_active).toDateString() === new Date().toDateString(),
+      ).length,
+      icon: Flame,
+    },
+  ];
+
+  return (
+    <div className="p-8 max-w-7xl">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <p className="text-muted-foreground mt-1">Overview of all practice accounts</p>
+        </div>
+        <Link to="/users">
+          <Button className="bg-accent text-accent-foreground hover:bg-accent/90">
+            Manage Users
+          </Button>
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {cards.map((c) => (
+          <Card key={c.label}>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-sm text-muted-foreground">{c.label}</div>
+                  <div className="text-2xl font-bold mt-1">{c.value}</div>
+                </div>
+                <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center">
+                  <c.icon className="w-5 h-5 text-accent" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Recent activity</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <p className="text-sm text-muted-foreground">Loading…</p>
+          ) : rows.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No users yet. Create accounts from the Users page.
+            </p>
+          ) : (
+            <div className="divide-y">
+              {rows
+                .slice()
+                .sort(
+                  (a, b) =>
+                    new Date(b.last_active ?? 0).getTime() -
+                    new Date(a.last_active ?? 0).getTime(),
+                )
+                .slice(0, 8)
+                .map((r) => (
+                  <Link
+                    key={r.user_id}
+                    to="/users/$userId"
+                    params={{ userId: r.user_id }}
+                    className="py-3 flex items-center justify-between text-sm hover:bg-muted/40 px-2 -mx-2 rounded"
+                  >
+                    <div>
+                      <div className="font-medium">{r.full_name || r.email}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {r.total_quizzes} quiz{r.total_quizzes === 1 ? "" : "zes"} •{" "}
+                        {r.last_active
+                          ? `last active ${new Date(r.last_active).toLocaleString()}`
+                          : "never active"}
+                      </div>
+                    </div>
+                    <div className="font-semibold text-accent">
+                      {Number(r.avg_score_pct).toFixed(0)}%
+                    </div>
+                  </Link>
+                ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
