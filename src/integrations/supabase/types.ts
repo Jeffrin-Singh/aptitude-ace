@@ -106,6 +106,7 @@ export type Database = {
           option_c: string
           option_d: string
           question_text: string
+          question_type: string
           topic: string
         }
         Insert: {
@@ -119,6 +120,7 @@ export type Database = {
           option_c: string
           option_d: string
           question_text: string
+          question_type?: string
           topic: string
         }
         Update: {
@@ -132,6 +134,7 @@ export type Database = {
           option_c?: string
           option_d?: string
           question_text?: string
+          question_type?: string
           topic?: string
         }
         Relationships: []
@@ -142,6 +145,7 @@ export type Database = {
           difficulty: Database["public"]["Enums"]["difficulty_level"]
           id: string
           score: number
+          session_type: string
           time_taken_seconds: number
           topic: string
           total_questions: number
@@ -152,6 +156,7 @@ export type Database = {
           difficulty: Database["public"]["Enums"]["difficulty_level"]
           id?: string
           score?: number
+          session_type?: string
           time_taken_seconds?: number
           topic: string
           total_questions: number
@@ -162,6 +167,7 @@ export type Database = {
           difficulty?: Database["public"]["Enums"]["difficulty_level"]
           id?: string
           score?: number
+          session_type?: string
           time_taken_seconds?: number
           topic?: string
           total_questions?: number
@@ -192,9 +198,23 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_list_users: {
+        Args: never
+        Returns: {
+          avg_score_pct: number
+          created_at: string
+          email: string
+          full_name: string
+          last_active: string
+          role: Database["public"]["Enums"]["app_role"]
+          total_quizzes: number
+          user_id: string
+        }[]
+      }
       get_questions: {
         Args: {
           p_difficulty: Database["public"]["Enums"]["difficulty_level"]
+          p_question_type?: string
           p_topic: string
         }
         Returns: {
@@ -226,7 +246,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
-      difficulty_level: "easy" | "medium" | "hard"
+      difficulty_level: "easy" | "medium" | "hard" | "mixed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -355,7 +375,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
-      difficulty_level: ["easy", "medium", "hard"],
+      difficulty_level: ["easy", "medium", "hard", "mixed"],
     },
   },
 } as const

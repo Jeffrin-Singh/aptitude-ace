@@ -90,6 +90,7 @@ function PerformancePage() {
               <table className="w-full text-sm">
                 <thead className="text-left text-xs text-muted-foreground uppercase border-b">
                   <tr>
+                    <th className="py-2 pr-4">Type</th>
                     <th className="py-2 pr-4">Topic</th>
                     <th className="py-2 pr-4">Difficulty</th>
                     <th className="py-2 pr-4">Score</th>
@@ -101,6 +102,18 @@ function PerformancePage() {
                 <tbody className="divide-y">
                   {sessions.map((s) => (
                     <tr key={s.id}>
+                      <td className="py-2.5 pr-4">
+                        <span
+                          className={
+                            "inline-block px-2 py-0.5 rounded text-xs font-medium capitalize " +
+                            (s.session_type === "exam"
+                              ? "bg-accent text-accent-foreground"
+                              : "bg-muted text-muted-foreground")
+                          }
+                        >
+                          {s.session_type ?? "practice"}
+                        </span>
+                      </td>
                       <td className="py-2.5 pr-4 font-medium">{s.topic}</td>
                       <td className="py-2.5 pr-4 capitalize">{s.difficulty}</td>
                       <td className="py-2.5 pr-4">
@@ -118,6 +131,7 @@ function PerformancePage() {
                     </tr>
                   ))}
                 </tbody>
+
               </table>
             </div>
           )}

@@ -76,7 +76,7 @@ function PracticePage() {
                 <div className="text-xs text-muted-foreground mb-3">
                   {s?.attempts ?? 0} attempt{s?.attempts === 1 ? "" : "s"}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 mb-2">
                   {(["easy", "medium", "hard"] as const).map((d) => (
                     <Button
                       key={d}
@@ -94,7 +94,20 @@ function PracticePage() {
                     </Button>
                   ))}
                 </div>
+                <Button
+                  size="sm"
+                  className="w-full bg-accent text-accent-foreground hover:bg-accent/90"
+                  onClick={() =>
+                    navigate({
+                      to: "/quiz/$topic/$difficulty",
+                      params: { topic: t.slug, difficulty: "exam" },
+                    })
+                  }
+                >
+                  <Icons.GraduationCap className="w-4 h-4 mr-2" /> Take Full Exam
+                </Button>
               </CardContent>
+
             </Card>
           );
         })}

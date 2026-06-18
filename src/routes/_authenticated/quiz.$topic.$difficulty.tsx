@@ -54,10 +54,19 @@ function QuizPage() {
   const questionStartedAt = useRef(Date.now());
   const totalSeconds = TIMER_MINUTES[diff] * 60;
 
+  const isExam = diff === "exam";
+  const dbDifficulty = isExam ? "mixed" : diff;
+  const questionType = isExam ? "exam" : "practice";
+  const sessionType = isExam ? "exam" : "practice";
+
   // Load questions via safe RPC (no answers exposed)
   useEffect(() => {
     if (!topic) return;
-    (supabase.rpc as any)("get_questions", { p_topic: topic, p_difficulty: diff }).then(
+    (supabase.rpc as any)("get_questions", {
+      p_topic: topic,
+      p_difficulty: dbDifficulty,
+      p_question_type: questionType,
+    }).then(
       ({ data, error }: { data: Question[] | null; error: { message: string } | null }) => {
         if (error) {
           toast.error(error.message);
@@ -68,7 +77,8 @@ function QuizPage() {
         setLoading(false);
       },
     );
-  }, [topic, diff]);
+  }, [topic, dbDifficulty, questionType]);
+
 
 
   // Reset per-question timer
@@ -145,7 +155,8 @@ function QuizPage() {
       .insert({
         user_id: user.id,
         topic,
-        difficulty: diff,
+        difficulty: dbDifficulty,
+        session_type: sessionType,
         score,
         total_questions: questions.length,
         time_taken_seconds: timeTaken,

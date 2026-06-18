@@ -22,10 +22,19 @@ export const SLUG_BY_TOPIC: Record<string, string> = Object.fromEntries(
   Object.entries(TOPIC_BY_SLUG).map(([k, v]) => [v, k]),
 );
 
-export type Difficulty = "easy" | "medium" | "hard";
+export type Difficulty = "easy" | "medium" | "hard" | "exam";
 
 export const TIMER_MINUTES: Record<Difficulty, number> = {
   easy: 60,
   medium: 75,
   hard: 90,
+  exam: 90,
 };
+
+export const DIFFICULTY_LABEL: Record<Difficulty, string> = {
+  easy: "Easy",
+  medium: "Medium",
+  hard: "Hard",
+  exam: "Full Exam",
+};
+

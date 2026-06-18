@@ -12,9 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
 import { Route as AuthenticatedPracticeRouteImport } from './routes/_authenticated/practice'
 import { Route as AuthenticatedPerformanceRouteImport } from './routes/_authenticated/performance'
 import { Route as ApiPublicBootstrapAdminRouteImport } from './routes/api/public/bootstrap-admin'
+import { Route as AuthenticatedUsersUserIdRouteImport } from './routes/_authenticated/users.$userId'
 import { Route as AuthenticatedQuizTopicDifficultyRouteImport } from './routes/_authenticated/quiz.$topic.$difficulty'
 import { Route as AuthenticatedQuizTopicDifficultyResultSessionIdRouteImport } from './routes/_authenticated/quiz.$topic.$difficulty.result.$sessionId'
 
@@ -30,6 +32,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPracticeRoute = AuthenticatedPracticeRouteImport.update({
@@ -48,6 +55,12 @@ const ApiPublicBootstrapAdminRoute = ApiPublicBootstrapAdminRouteImport.update({
   path: '/api/public/bootstrap-admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedUsersUserIdRoute =
+  AuthenticatedUsersUserIdRouteImport.update({
+    id: '/$userId',
+    path: '/$userId',
+    getParentRoute: () => AuthenticatedUsersRoute,
+  } as any)
 const AuthenticatedQuizTopicDifficultyRoute =
   AuthenticatedQuizTopicDifficultyRouteImport.update({
     id: '/quiz/$topic/$difficulty',
@@ -66,6 +79,8 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/performance': typeof AuthenticatedPerformanceRoute
   '/practice': typeof AuthenticatedPracticeRoute
+  '/users': typeof AuthenticatedUsersRouteWithChildren
+  '/users/$userId': typeof AuthenticatedUsersUserIdRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/quiz/$topic/$difficulty': typeof AuthenticatedQuizTopicDifficultyRouteWithChildren
   '/quiz/$topic/$difficulty/result/$sessionId': typeof AuthenticatedQuizTopicDifficultyResultSessionIdRoute
@@ -74,7 +89,9 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/performance': typeof AuthenticatedPerformanceRoute
   '/practice': typeof AuthenticatedPracticeRoute
+  '/users': typeof AuthenticatedUsersRouteWithChildren
   '/': typeof AuthenticatedIndexRoute
+  '/users/$userId': typeof AuthenticatedUsersUserIdRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/quiz/$topic/$difficulty': typeof AuthenticatedQuizTopicDifficultyRouteWithChildren
   '/quiz/$topic/$difficulty/result/$sessionId': typeof AuthenticatedQuizTopicDifficultyResultSessionIdRoute
@@ -85,7 +102,9 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/performance': typeof AuthenticatedPerformanceRoute
   '/_authenticated/practice': typeof AuthenticatedPracticeRoute
+  '/_authenticated/users': typeof AuthenticatedUsersRouteWithChildren
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/users/$userId': typeof AuthenticatedUsersUserIdRoute
   '/api/public/bootstrap-admin': typeof ApiPublicBootstrapAdminRoute
   '/_authenticated/quiz/$topic/$difficulty': typeof AuthenticatedQuizTopicDifficultyRouteWithChildren
   '/_authenticated/quiz/$topic/$difficulty/result/$sessionId': typeof AuthenticatedQuizTopicDifficultyResultSessionIdRoute
@@ -97,6 +116,8 @@ export interface FileRouteTypes {
     | '/auth'
     | '/performance'
     | '/practice'
+    | '/users'
+    | '/users/$userId'
     | '/api/public/bootstrap-admin'
     | '/quiz/$topic/$difficulty'
     | '/quiz/$topic/$difficulty/result/$sessionId'
@@ -105,7 +126,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/performance'
     | '/practice'
+    | '/users'
     | '/'
+    | '/users/$userId'
     | '/api/public/bootstrap-admin'
     | '/quiz/$topic/$difficulty'
     | '/quiz/$topic/$difficulty/result/$sessionId'
@@ -115,7 +138,9 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/performance'
     | '/_authenticated/practice'
+    | '/_authenticated/users'
     | '/_authenticated/'
+    | '/_authenticated/users/$userId'
     | '/api/public/bootstrap-admin'
     | '/_authenticated/quiz/$topic/$difficulty'
     | '/_authenticated/quiz/$topic/$difficulty/result/$sessionId'
@@ -150,6 +175,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/users': {
+      id: '/_authenticated/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthenticatedUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/practice': {
       id: '/_authenticated/practice'
       path: '/practice'
@@ -171,6 +203,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicBootstrapAdminRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/users/$userId': {
+      id: '/_authenticated/users/$userId'
+      path: '/$userId'
+      fullPath: '/users/$userId'
+      preLoaderRoute: typeof AuthenticatedUsersUserIdRouteImport
+      parentRoute: typeof AuthenticatedUsersRoute
+    }
     '/_authenticated/quiz/$topic/$difficulty': {
       id: '/_authenticated/quiz/$topic/$difficulty'
       path: '/quiz/$topic/$difficulty'
@@ -187,6 +226,17 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedUsersRouteChildren {
+  AuthenticatedUsersUserIdRoute: typeof AuthenticatedUsersUserIdRoute
+}
+
+const AuthenticatedUsersRouteChildren: AuthenticatedUsersRouteChildren = {
+  AuthenticatedUsersUserIdRoute: AuthenticatedUsersUserIdRoute,
+}
+
+const AuthenticatedUsersRouteWithChildren =
+  AuthenticatedUsersRoute._addFileChildren(AuthenticatedUsersRouteChildren)
 
 interface AuthenticatedQuizTopicDifficultyRouteChildren {
   AuthenticatedQuizTopicDifficultyResultSessionIdRoute: typeof AuthenticatedQuizTopicDifficultyResultSessionIdRoute
@@ -206,6 +256,7 @@ const AuthenticatedQuizTopicDifficultyRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedPerformanceRoute: typeof AuthenticatedPerformanceRoute
   AuthenticatedPracticeRoute: typeof AuthenticatedPracticeRoute
+  AuthenticatedUsersRoute: typeof AuthenticatedUsersRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedQuizTopicDifficultyRoute: typeof AuthenticatedQuizTopicDifficultyRouteWithChildren
 }
@@ -213,6 +264,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPerformanceRoute: AuthenticatedPerformanceRoute,
   AuthenticatedPracticeRoute: AuthenticatedPracticeRoute,
+  AuthenticatedUsersRoute: AuthenticatedUsersRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedQuizTopicDifficultyRoute:
     AuthenticatedQuizTopicDifficultyRouteWithChildren,
