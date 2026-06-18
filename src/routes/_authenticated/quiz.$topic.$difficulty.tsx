@@ -248,7 +248,7 @@ function QuizPage() {
             {(["a", "b", "c", "d"] as const).map((opt) => {
               const text = q[`option_${opt}` as keyof Question] as string;
               const isSelected = answer?.selected === opt;
-              const isCorrectOpt = q.correct_option === opt;
+              const isCorrectOpt = answer?.correctOption === opt;
               const showResult = !!answer;
               return (
                 <button
